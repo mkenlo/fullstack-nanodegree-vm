@@ -4,6 +4,21 @@
 -- statements if you choose to use it.
 --
 -- You can write comments in this file by starting them with two dashes, like
--- these lines here.
+-- these lines here
+
+CREATE TABLE players
+(
+  player_id SERIAL NOT NULL,
+  player_name text NOT NULL,
+  CONSTRAINT player_pkey PRIMARY KEY (player_id)
+);
+
+CREATE TABLE matches
+(
+  match_id SERIAL NOT NULL,
+  winner integer NOT NULL REFERENCES players(player_id),
+  loser integer NOT NULL REFERENCES players(player_id),
+  CONSTRAINT match_pkey PRIMARY KEY (match_id)
+);
 
 
