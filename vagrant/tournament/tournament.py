@@ -9,35 +9,38 @@ import string
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+    database_name = "tournament"
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("<Oups!! Error occured while connecting to the database>")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM matches")
-    conn.commit()
-    conn.close()
+    db, cursor=connect()
+    cursor.execute("DELETE FROM matches;")
+    db.commit()
+    db.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM players")
-    conn.commit()
-    conn.close()
+    db, cursor=connect()
+    cursor.execute("DELETE FROM players;")
+    db.commit()
+    db.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM players")
-    result = cursor.fetchone()
-    conn.commit()
-    conn.close()
+    db, cursor=connect()
+    cursor.execute("SELECT COUNT(*) FROM players;")
+    result=cursor.fetchone()
+    db.commit()
+    db.close()
     return result[0]
 
 
@@ -50,12 +53,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    conn = connect()
-    cursor = conn.cursor()
-    query = "INSERT INTO players(player_name) VALUES ($$%s$$)" % name.strip()
-    cursor.execute(query)
-    conn.commit()
-    conn.close()
+    db, cursor=connect()
+    query="INSERT INTO players(player_name) VALUES (%s);"
+    cursor.execute(query, (name.strip(),))
+    db.commit()
+    db.close()
 
 
 def playerStandings():
@@ -71,23 +73,20 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    conn = connect()
-    cursor = conn.cursor()
+    db, cursor=connect()
 
-    query_count_matches = """SELECT COUNT(*) FROM matches 
-    WHERE matches.winner=p.player_id or matches.loser=p.player_id"""
-
-    query = """SELECT p.player_id, p.player_name, (COUNT(m.winner))::int as wins,
-    (%s)::int as matches
+    query="""SELECT p.player_id, p.player_name, (COUNT(m.winner))::int as wins,
+    (SELECT COUNT(*) FROM matches
+    WHERE matches.winner=p.player_id or matches.loser=p.player_id)::int as matches
     from players p left outer join matches m on p.player_id=m.winner
     group by p.player_id, p.player_name
-    order by wins DESC""" % query_count_matches
-
+    order by wins DESC"""
+   
     cursor.execute(query)
-    result = cursor.fetchall()
+    result=cursor.fetchall()
 
-    conn.commit()
-    conn.close()
+    db.commit()
+    db.close()
     if result:
         return result
     else:
@@ -101,13 +100,12 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    conn = connect()
-    cursor = conn.cursor()
+    db, cursor=connect()
     # record match
     cursor.execute(
         "INSERT INTO matches(winner, loser) VALUES (%s,%s)", (winner, loser))
-    conn.commit()
-    conn.close()
+    db.commit()
+    db.close()
 
 
 def swissPairings():
@@ -125,17 +123,18 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    standings = playerStandings()
-    pairings = list()
+    standings=playerStandings()
+    pairings=list()
+
     if len(standings) % 2 == 0:
-        i = 0
+        i=0
         while i < len(standings):
-            player1 = standings[i]
-            player2 = standings[i + 1]
-            one_pairing = (
+            player1=standings[i]
+            player2=standings[i + 1]
+            one_pairing=(
                 player1[0], player1[1],
                 player2[0], player2[1])
             pairings.append(one_pairing)
-            i = i + 2
+            i=i + 2
 
     return pairings
