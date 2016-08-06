@@ -1,0 +1,66 @@
+{% extends "base.html" %} 
+
+{% block content %}
+		<div class="row">
+			<div id="signinButton" class="col-md-6">
+				<h2>Sign in with Google</h2>
+				<br>
+				<div class="g-signin2" data-onsuccess="signInCallback"
+					data-scope="openid email"
+		            data-clientid="524795452795-ctrgsple6evi7vldfku6bp975qvjf8g4.apps.googleusercontent.com"
+		            data-redirecturi="postmessage"
+		            data-accesstype="offline"
+		            data-cookiepolicy="single_host_origin"
+		            data-callback="signInCallback"
+		            data-approvalprompt="force">
+
+				</div>
+				
+			</div>
+			<br><br>
+			<div id="result" class="col-md-6">
+				
+
+			</div>
+			
+			
+<script>
+	function signInCallback(authResult){
+	// console.log("AuthResult:  "+authResult['code']);
+	if(authResult['code']){
+		
+		$.ajax({
+			type:'POST',
+			url:'/gconnect?state={{STATE}}',
+			processData:false,
+			contentType:'application/octet-stream;charset=utf-8',
+			data: authResult['code'],
+			error: function(result){
+				$('#result').addClass('alert alert-danger');
+				$('#result').append("<h1>Ooops!! Sign in Failed</h1>"); 
+				$('#result').append("<ul><li>error : "+ result.status+"</li>"+
+					"<li>message : "+ result.responseText+"</li></ul></span>");
+				console.log(result);
+			},
+			success: function(result){
+				$('#signinButton').attr('style', 'display:none');
+				$('#result').addClass("alert alert-success");
+				$('#result').append(result);
+				$('#result').append("redirecting...");
+				setTimeout(function() {
+		          window.location.href = "/catalog";
+		         }, 4000);
+				
+			}
+			
+
+		})
+	}
+}
+</script>
+			
+
+
+		</div>
+
+{% endblock %}

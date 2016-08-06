@@ -1,0 +1,53 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<div class="row">
+	<div class="col-md-6">
+	{% if username and category %}
+	
+		<h3>Edit Category</h3>
+	      <form action="{{url_for('categoryEdit', category_id = category.id)}}" method="POST">
+	      	<input type="text" name="cat_name" placeholder="{{category.name}}" class="form-control" required>
+	      	<br>
+	      	<br>
+	      	<input type="submit" class="btn btn-primary" value="Save"> 
+	      	<a href="#" data-toggle="modal" data-target="#confirmationBox" class="btn btn-danger">Delete </a>
+	      	<a href="{{url_for('categoryItemsJSON', category_id = category.id)}}" class="btn btn-primary">Export JSON </a>
+	      	<a href="javascript:history.go(-1)" class="btn btn-default">Cancel</a>
+	      </form>
+		<!-- modal confirmation box -->
+		<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="confirmationBox">
+		  <div class="modal-dialog modal-sm">
+		    <div class="modal-content">
+		    	<div class="modal-header">
+			      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			    <h5 class="modal-title">Are you sure you want to delete this ? </h5>
+			    </div>
+		    	
+		    	<div class="modal-body">
+			      <form action="{{url_for('categoryDelete')}}" method="POST">
+			      	<input type="hidden" value={{category.id}} name="category_id">
+			      	<input type="submit" class="btn btn-primary" value="Yes"> 	      	
+		      		<button class="btn btn-default">Cancel</button>
+			      </form>	
+		  		</div>
+		    </div>
+		  </div>
+		</div>
+		<!-- end modal -->
+	{% elif username %}
+	
+		<h3>Add Category</h3>
+		 <form action="{{url_for('categoryAdd')}}" method="POST">
+	      	<input type="text" name="cat_name" placeholder="category name" class="form-control" required>
+	      	<br>	      	
+	      	<br>
+	      	<input type="submit" class="btn btn-primary" value="Save"> 
+	      	<a href="javascript:history.go(-1)" class="btn btn-default">Cancel</a>
+	      </form>
+	
+	{% endif %}   
+	</div>
+</div>
+
+{% endblock %}

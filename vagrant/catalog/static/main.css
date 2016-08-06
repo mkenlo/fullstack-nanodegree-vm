@@ -1,0 +1,46 @@
+
+
+/* ==========================================================================
+    custom styles
+   ========================================================================== */
+
+body {
+	
+	padding-bottom: 20px;
+    font-family: 'Open sans', sans-serif;
+    color:#2d3c49;
+}
+
+hr {
+	color:#2d3c49;
+
+}
+
+.container{
+	max-width:850px;
+
+}
+.wrapper{
+	padding: 10px;
+	border: 1px solid #B2DFDB;
+}
+@media (max-width: 450px) {
+	.modal-dialog{
+		max-width: 300px;
+	}
+
+}
+
+footer {
+	margin-top: 50px;
+	padding:20px;
+	text-align: center;
+}
+
+
+
+
+
+
+
+
