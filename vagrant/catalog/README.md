@@ -23,5 +23,5 @@ This project is part of the Fullstack Nanodegree program.
 - run database_setup.py
 - run lotofitemscategories.py
 - run application.py
-- visit <code>http:localhost:5000</code>
+- visit <code>http://localhost:5000</code>
 
